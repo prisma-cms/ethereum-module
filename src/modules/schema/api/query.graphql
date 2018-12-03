@@ -5,8 +5,13 @@ type Query {
 
   ethCoinbase: EthAccount
 
-  ethAccounts: [EthAccount!]!
-  ethPersonalAccounts: [EthPersonalAccount!]!
+  ethAccounts(
+    where: Boolean
+  ): [EthAccount!]!
+
+  ethPersonalAccounts(
+    where: Boolean
+  ): [EthPersonalAccount!]!
 
   ethBalance(
     address: String!
@@ -17,7 +22,9 @@ type Query {
     name: String!
   ): EthContract
 
-  ethContracts: [EthContract!]!
+  ethContracts(
+    where: Boolean
+  ): [EthContract!]!
 
   ethContractByAddress(
     name: String!
