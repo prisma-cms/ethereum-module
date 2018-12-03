@@ -1,0 +1,20 @@
+
+
+type EthPersonalAccount{
+  address: String!
+  balance(
+    convert: EthAmountConvert
+  ): Float
+}
+
+input EthPersonalAccountCreateInput {
+  password: String!
+}
+
+ 
+type EthPersonalAccountResponse {
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: EthPersonalAccount
+}

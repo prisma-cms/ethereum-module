@@ -1,0 +1,8 @@
+
+scalar Json
+scalar Long
+
+type Error {
+  key: String!
+  message: String!
+}

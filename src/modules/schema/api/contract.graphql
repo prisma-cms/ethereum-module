@@ -1,0 +1,8 @@
+
+
+type EthContract{
+  name: String!
+  bytecode: String
+  interface: Json
+  # errors: Json
+}

@@ -1,0 +1,13 @@
+
+type ethSyncState{
+  """The block number where the sync started"""
+  startingBlock: Int!
+  """The block number where at which block the node currently synced to already"""
+  currentBlock: Int!
+  """The estimated block number to sync to"""
+  highestBlock: Int!
+  """The estimated states to download"""
+  knownStates: Int!
+  """The already downloaded states"""
+  pulledStates: Int!
+}

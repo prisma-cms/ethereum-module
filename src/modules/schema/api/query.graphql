@@ -1,0 +1,32 @@
+
+type Query {
+
+  ethNet: ethNet!
+
+  ethCoinbase: EthAccount
+
+  ethAccounts: [EthAccount!]!
+  ethPersonalAccounts: [EthPersonalAccount!]!
+
+  ethBalance(
+    address: String!
+    convert: EthAmountConvert
+  ): Float
+
+  ethContract(
+    name: String!
+  ): EthContract
+
+  ethContracts: [EthContract!]!
+
+  ethContractByAddress(
+    name: String!
+    address: String!
+  ): Json
+
+  ethTransactionCount(
+    address: String!
+  ): Int!
+
+  ethSyncState: ethSyncState!
+}

@@ -1,0 +1,56 @@
+
+
+type Mutation {
+  ethDeployContract(
+    name: String!
+    from: String!
+    password: String
+    params: Json
+    gas: Int
+    gasPrice: Int
+  ): Json
+  
+  ethContractCall(
+    name: String!
+    address: String!
+    method: String!
+    params: Json
+    from: String
+  ): Json
+  
+  ethContractRead(
+    name: String!
+    address: String!
+    method: String!
+    params: Json
+    from: String
+  ): Json
+  
+  # ethTokenMint(
+  #   masterPassword: String!,
+  #   name: String!
+  #   address: String!
+  #   to:String!
+  #   amount:Long!
+  # ): Json
+  
+  ethChargeUserBalance(
+    masterPassword: String!,
+    name: String!
+    address: String!
+    to:String!
+    amount:Long!
+  ): Json
+
+  ethUnlockPersonalAccount (
+    address: String!
+    password: String!
+    duration: Int
+  ): Boolean!
+
+ 
+  ethCreatePersonalAccountProcessor(
+    data: EthPersonalAccountCreateInput!
+  ): EthPersonalAccountResponse! 
+
+}

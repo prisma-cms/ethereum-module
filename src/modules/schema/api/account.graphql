@@ -1,0 +1,12 @@
+
+enum EthAmountConvert{
+  wei
+  ether
+}
+
+type EthAccount{
+  address: String!
+  balance(
+    convert: EthAmountConvert
+  ): Float
+}
