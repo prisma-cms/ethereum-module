@@ -28,5 +28,5 @@ type Query {
     address: String!
   ): Int!
 
-  ethSyncState: ethSyncState!
+  ethSyncState: ethSyncState
 }

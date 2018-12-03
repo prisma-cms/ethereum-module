@@ -89,7 +89,11 @@ class EthModule extends PrismaModule {
       },
     } = ctx;
 
-    return await eth.isSyncing();
+    const result = await eth.isSyncing();
+
+    // console.log("ethSyncState.result", result);
+
+    return result && result || null;
   }
 
 
