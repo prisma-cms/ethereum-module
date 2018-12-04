@@ -6,6 +6,7 @@ import chalk from "chalk";
 import PrismaModule from "@prisma-cms/prisma-module";
 
 import LogModule from "@prisma-cms/log-module";
+import UserModule from "@prisma-cms/user-module";
 
 import EthModule from "./eth";
 import AccountModule from "./account";
@@ -37,6 +38,7 @@ class Module extends PrismaModule {
 
     this.mergeModules([
       LogModule,
+      UserModule,
       EthModule,
       AccountModule,
       ContractModule,

@@ -98,14 +98,16 @@ const ethBalance = async function (source, args, ctx, info) {
 
       if (balance) {
 
-        switch (convert) {
+        // switch (convert) {
 
-          case 'ether':
+        //   case 'ether':
 
-            balance = web3.utils.fromWei(balance, 'ether');
-            break;
+        //     balance = web3.utils.fromWei(balance, 'ether');
+        //     break;
 
-        }
+        // }
+
+        balance = web3.utils.fromWei(balance, convert);
 
       }
 

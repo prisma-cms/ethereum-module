@@ -17,14 +17,15 @@ const {
   ...other
 } = resolvers;
 
+const {
+  GethServer = "http://localhost:8545",
+} = process.env;
 
 
-const GethServer = process.env.GethServer;
-
-if(!GethServer){
-  throw("Env GethServer required");
+if (!GethServer) {
+  throw ("Env GethServer required");
 }
- 
+
 const web3 = new Web3();
 web3.setProvider(new web3.providers.HttpProvider(GethServer));
 

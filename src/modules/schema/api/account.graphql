@@ -1,7 +1,15 @@
 
 enum EthAmountConvert{
   wei
+  Kwei
+  Mwei
+  Gwei
+  nano
   ether
+  kether
+  mether
+  gether
+  tether
 }
 
 type EthAccount{
