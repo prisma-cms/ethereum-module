@@ -1,6 +1,7 @@
 1.3.0
 ===============================
 - Added balance converter
+- Added create/edit/deploy contracts
 
 1.2.2
 ===============================

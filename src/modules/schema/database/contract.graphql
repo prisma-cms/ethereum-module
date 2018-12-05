@@ -1,0 +1,13 @@
+
+type EthContract{
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: Json
+  source: String
+  bytecode: String
+  abi: Json
+  CreatedBy: User! @relation(name: "EthContractCreatedBy")
+  txHash: String @unique
+}

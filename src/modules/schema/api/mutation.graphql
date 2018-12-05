@@ -1,14 +1,22 @@
 
 
 type Mutation {
-  ethDeployContract(
-    name: String!
-    from: String!
-    password: String
-    params: Json
-    gas: Int
-    gasPrice: Int
-  ): Json
+
+
+  createEthContractProcessor(
+    data: EthContractCreateInput!
+  ): EthContractResponse!
+
+  updateEthContractProcessor(
+    data: EthContractUpdateInput!
+    where: EthContractWhereUniqueInput!
+  ): EthContractResponse!
+
+
+  deployEthContractProcessor(
+    data: EthContractDeployInput!
+    where: EthContractWhereUniqueInput!
+  ): EthContractResponse
   
   ethContractCall(
     name: String!

@@ -78,7 +78,10 @@ class Module extends PrismaModule {
       baseSchema = fs.readFileSync(schemaFile, "utf-8");
     }
 
-    let apiSchema = super.getApiSchema(types.concat(baseSchema), []);
+    let apiSchema = super.getApiSchema(types.concat(baseSchema), [
+      "EthContractCreateInput",
+      "EthContractUpdateInput",
+    ]);
 
     let schema = fileLoader(__dirname + '/schema/api/', {
       recursive: true,

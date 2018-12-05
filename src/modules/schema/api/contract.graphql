@@ -1,8 +1,34 @@
 
 
-type EthContract{
+
+type EthContractResponse {
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: EthContract
+}
+
+input EthContractCreateInput {
   name: String!
+  description: Json
+  source: String
   bytecode: String
-  interface: Json
-  # errors: Json
+  abi: Json
+}
+
+input EthContractUpdateInput {
+  name: String
+  description: Json
+  source: String
+  bytecode: String
+  abi: Json
+}
+
+input EthContractDeployInput {
+  # name: String!
+  # from: String!
+  password: String
+  params: Json
+  gas: Int
+  gasPrice: Int
 }

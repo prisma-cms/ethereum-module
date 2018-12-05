@@ -18,18 +18,18 @@ type Query {
     convert: EthAmountConvert
   ): Float
 
-  ethContract(
-    name: String!
-  ): EthContract
+  # ethContract(
+  #   name: String!
+  # ): EthContract
 
-  ethContracts(
-    where: Boolean
-  ): [EthContract!]!
+  # ethContracts(
+  #   where: Boolean
+  # ): [EthContract!]!
 
-  ethContractByAddress(
-    name: String!
-    address: String!
-  ): Json
+  # ethContractByAddress(
+  #   name: String!
+  #   address: String!
+  # ): Json
 
   ethTransactionCount(
     address: String!
