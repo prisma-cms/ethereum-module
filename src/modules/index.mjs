@@ -11,6 +11,7 @@ import UserModule from "@prisma-cms/user-module";
 import EthModule from "./eth";
 import AccountModule from "./account";
 import ContractModule from "./contract";
+import TransactionModule from "./transaction";
 
 import MergeSchema from 'merge-graphql-schemas';
 
@@ -42,6 +43,7 @@ class Module extends PrismaModule {
       EthModule,
       AccountModule,
       ContractModule,
+      TransactionModule,
     ]);
 
   }
@@ -81,6 +83,7 @@ class Module extends PrismaModule {
     let apiSchema = super.getApiSchema(types.concat(baseSchema), [
       "EthContractCreateInput",
       "EthContractUpdateInput",
+      "EthTransactionCreateInput",
     ]);
 
     let schema = fileLoader(__dirname + '/schema/api/', {

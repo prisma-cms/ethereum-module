@@ -95,7 +95,7 @@ const ethBalance = async function (source, args, ctx, info) {
   let result = await web3.eth.getBalance(address)
     .then(balance => {
 
-      console.log("balance", balance, typeof balance);
+      // console.log("balance", balance, typeof balance);
 
       if (balance) {
 
@@ -121,7 +121,7 @@ const ethBalance = async function (source, args, ctx, info) {
 
 
 
-  console.log("result", result);
+  // console.log("result", result);
 
   return result || null;
 }

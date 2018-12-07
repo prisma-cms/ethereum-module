@@ -61,4 +61,7 @@ type Mutation {
     data: EthPersonalAccountCreateInput!
   ): EthPersonalAccountResponse! 
 
+  createEthTransactionProcessor(
+    data: EthTransactionCreateInput!
+  ): EthTransactionResponse!
 }

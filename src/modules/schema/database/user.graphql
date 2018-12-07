@@ -4,4 +4,5 @@ type User {
   EthContractsCreated: [EthContract!]! @relation(name: "EthContractCreatedBy")
   EthContractsDeployed: [EthDeployedContract!]! @relation(name: "EthDeployedContractCreatedBy")
   EthAccounts: [EthAccount!]! @relation(name: "EthAccountCreatedBy")
+  EthTransactions: [EthTransaction!]! @relation(name: "EthTransactionCreatedBy")
 }

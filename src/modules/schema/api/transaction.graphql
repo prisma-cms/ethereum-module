@@ -1,0 +1,13 @@
+
+type EthTransactionResponse{
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: EthTransaction
+}
+
+input EthTransactionCreateInput {
+  privateKey: String!
+  type: EthTransactionTypes!
+  params: Json
+}

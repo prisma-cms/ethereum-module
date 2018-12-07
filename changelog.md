@@ -1,3 +1,7 @@
+1.4.1
+===============================
+- Added send transaction
+
 1.4.0
 ===============================
 - Added contract deployment

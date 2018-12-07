@@ -1,0 +1,17 @@
+
+enum EthTransactionTypes {
+  ContractCreate
+  ContractRead
+  ContractCall
+  SendEth
+  SendToken
+}
+
+type EthTransaction{
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  address: String! @unique
+  type: EthTransactionTypes!
+  CreatedBy: User! @relation(name: "EthTransactionCreatedBy")
+}
