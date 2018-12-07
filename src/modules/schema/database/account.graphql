@@ -1,0 +1,7 @@
+
+
+type EthAccount{
+  id: ID! @unique
+  address: String! @unique
+  CreatedBy: User! @relation(name: "EthAccountCreatedBy")
+}

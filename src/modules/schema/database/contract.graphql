@@ -6,8 +6,6 @@ type EthContract{
   name: String!
   description: Json
   source: String
-  bytecode: String
-  abi: Json
   CreatedBy: User! @relation(name: "EthContractCreatedBy")
-  txHash: String @unique
+  Deployed: [EthDeployedContract!]! @relation(name: "EthContractDeployed")
 }

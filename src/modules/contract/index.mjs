@@ -82,7 +82,7 @@ export class EthContractProcessor extends PrismaProcessor {
       },
     } = contract;
 
-    // console.log("contract", contract);
+
 
     if (!createdById || createdById !== currentUserId) {
       return this.addError("Нельзя редактировать чужой контракт");
@@ -145,16 +145,49 @@ export class EthContractProcessor extends PrismaProcessor {
         password,
         ...data
       },
+      ...otherArgs
     } = args;
 
     const {
       currentUser,
+      db,
     } = this.ctx;
 
     const {
       id: currentUserId,
-      ethWallet: from,
+      // ethWallet: from,
     } = currentUser || {};
+
+
+    if (!currentUserId) {
+      return this.addError("Необходимо авторизоваться");
+    }
+
+    const user = await db.query.user({
+      where: {
+        id: currentUserId,
+      },
+    }, `{
+      id
+      EthAccounts{
+        id
+        address,
+      }
+    }`);
+
+
+    if (!user) {
+      return this.addError("Не был получен пользователь");
+    }
+
+    const {
+      address: from,
+    } = user.EthAccounts && user.EthAccounts[0] || {};
+
+
+    if (!from) {
+      return this.addError("Не был получен кошелек пользователя");
+    }
 
 
     const contract = await this.query("ethContract", {
@@ -162,7 +195,6 @@ export class EthContractProcessor extends PrismaProcessor {
     }, `{
       id
       name
-      txHash
       source
       CreatedBy{
         id
@@ -178,7 +210,7 @@ export class EthContractProcessor extends PrismaProcessor {
       },
     } = contract;
 
-    console.log("contract", contract);
+
 
 
 
@@ -195,7 +227,7 @@ export class EthContractProcessor extends PrismaProcessor {
     }
 
     else if (!password) {
-      this.addError("Не указан пароль для кошелька");
+      this.addFieldError("password", "Не указан пароль для кошелька");
     }
 
     else {
@@ -209,11 +241,11 @@ export class EthContractProcessor extends PrismaProcessor {
       }
       catch (error) {
 
-        console.log(chalk.green("contract compile error"), error);
+
         throw (error);
       }
 
-      // console.log(chalk.green("contractSource"), contractSource);
+
 
       let contracts = [];
 
@@ -241,8 +273,8 @@ export class EthContractProcessor extends PrismaProcessor {
           }
 
           // code and ABI that are needed by web3
-          console.log(contractName + ': ' + contractsSource.contracts[contractName].bytecode)
-          console.log(contractName + '; ' + JSON.parse(contractsSource.contracts[contractName].interface))
+
+
 
           contracts.push({
             ...contract,
@@ -256,9 +288,9 @@ export class EthContractProcessor extends PrismaProcessor {
       let contractForDeploy = contracts.find(n => n.name === name);
 
 
-      // console.log(chalk.green("contracts"), contracts.map(({name}) => name));
 
-      console.log(chalk.green("contractForDeploy"), name, contractForDeploy);
+
+
 
       // return;
 
@@ -272,22 +304,64 @@ export class EthContractProcessor extends PrismaProcessor {
           bytecode,
         } = contractForDeploy;
 
-        console.log(chalk.green("contractForDeploy abi"), abi);
 
-        let deployResult = await this.ethDeployContract({
+
+        await this.ethDeployContract({
           abi,
           bytecode,
           from,
           password,
-        });
+        })
+          .then(deployResult => {
 
-        console.log(chalk.green("deployResult"), deployResult);
-        console.log(chalk.green("abi"), abi);
+
+
+            const {
+              newContractInstance,
+              txHash,
+            } = deployResult;
+
+
+
+
+            const {
+              _jsonInterface,
+              _address,
+            } = newContractInstance;
+
+            Object.assign(data, {
+              Deployed: {
+                create: {
+                  name,
+                  source,
+                  address: _address,
+                  txHash,
+                  bytecode,
+                  abi: _jsonInterface,
+                  CreatedBy: {
+                    connect: {
+                      id: currentUserId,
+                    },
+                  },
+                },
+              },
+            });
+
+          });
+
 
       }
 
     }
 
+
+    args = {
+      where,
+      data: {
+        ...data
+      },
+      ...otherArgs
+    };
 
 
     return this.updateWithResponse(objectType, args, info)
@@ -339,8 +413,8 @@ export class EthContractProcessor extends PrismaProcessor {
 
     var myContract = new web3.eth.Contract(contractInterface);
 
-    // console.log("params", params);
-    // console.log("bytecode", bytecode);
+
+
 
 
     if (password) {
@@ -354,6 +428,8 @@ export class EthContractProcessor extends PrismaProcessor {
 
       const data = `0x${bytecode}`;
 
+      let txHash;
+
       myContract.deploy({
         data,
         arguments: params,
@@ -363,31 +439,35 @@ export class EthContractProcessor extends PrismaProcessor {
           gas,
           gasPrice,
         }, function (error, transactionHash) {
-          console.log("send transactionHash", transactionHash);
+
         })
         .on('error', function (error) {
-          console.log("error", error);
+
 
           reject(error);
 
         })
         .on('transactionHash', function (transactionHash) {
-          console.log("on transactionHash", transactionHash);
+
+          txHash = transactionHash;
         })
         .on('receipt', function (receipt) {
-          console.log("on receipt", receipt.contractAddress) // contains the new contract address
+
         })
         .on('confirmation', function (confirmationNumber, receipt) {
-          // console.log("on confirmation", confirmationNumber, receipt);
+
         })
         .then(function (newContractInstance) {
-          // console.log("newContractInstance", newContractInstance.options.address) // instance with the new contract address
-          console.log("newContractInstance", newContractInstance) // instance with the new contract address
 
-          resolve(newContractInstance);
+
+
+          resolve({
+            newContractInstance,
+            txHash,
+          });
         });
 
-      console.log("myContract", myContract);
+
 
     });
 
@@ -446,7 +526,7 @@ const ethContractByAddress = async function (source, args, ctx, info) {
 
     myContract.options.address = address;
 
-    console.log("myContract", myContract);
+
 
     resolve(myContract);
 
@@ -457,7 +537,7 @@ const ethContractByAddress = async function (source, args, ctx, info) {
 
 const callContractMethod = async function (contractMethod, source, args, ctx, info) {
 
-  console.log("callContractMethod args", args);
+
 
   let {
     method,
@@ -509,7 +589,7 @@ const callContractMethod = async function (contractMethod, source, args, ctx, in
       throw (error);
     });
 
-  console.log("call result", result);
+
 
   return result;
 }
@@ -547,7 +627,7 @@ const mint = async function (source, args, ctx, info) {
     });
 
 
-  console.log("unlockResult", unlockResult);
+
 
 
   const result = await ethContractRead(source, {
@@ -556,7 +636,7 @@ const mint = async function (source, args, ctx, info) {
     params: [to, amount],
   }, ctx, info);
 
-  console.log("call result", result);
+
 
   return result;
 }
@@ -594,7 +674,7 @@ const ethChargeUserBalance = async function (source, args, ctx, info) {
     });
 
 
-  console.log("unlockResult", unlockResult);
+
 
 
   const result = await ethContractRead(source, {
@@ -603,7 +683,7 @@ const ethChargeUserBalance = async function (source, args, ctx, info) {
     params: [to, amount],
   }, ctx, info);
 
-  console.log("ethChargeUserBalance result", result);
+
 
   return result;
 }
@@ -630,11 +710,18 @@ class ContractModule extends PrismaModule {
     super(props);
 
     this.Query = {
-      ethContractsConnection: this.ethContractsConnection,
       // ethContract,
-      ethContract: this.ethContract,
       // ethContracts: this.ethContracts,
       // ethContractByAddress,
+
+      ethContractsConnection: this.ethContractsConnection,
+      ethContracts: this.ethContracts,
+      ethContract: this.ethContract,
+
+      ethDeployedContractsConnection: this.ethDeployedContractsConnection,
+      ethDeployedContracts: this.ethDeployedContracts,
+      ethDeployedContract: this.ethDeployedContract,
+
     };
 
     this.Mutation = {
@@ -696,8 +783,25 @@ class ContractModule extends PrismaModule {
     return ctx.db.query.ethContractsConnection(args, info);
   }
 
+  async ethContracts(source, args, ctx, info) {
+    return ctx.db.query.ethContracts(args, info);
+  }
+
   async ethContract(source, args, ctx, info) {
     return ctx.db.query.ethContract(args, info);
+  }
+
+
+  async ethDeployedContractsConnection(source, args, ctx, info) {
+    return ctx.db.query.ethDeployedContractsConnection(args, info);
+  }
+
+  async ethDeployedContracts(source, args, ctx, info) {
+    return ctx.db.query.ethDeployedContracts(args, info);
+  }
+
+  async ethDeployedContract(source, args, ctx, info) {
+    return ctx.db.query.ethDeployedContract(args, info);
   }
 
   // async ethContracts(source, args, ctx, info) {
@@ -716,7 +820,7 @@ class ContractModule extends PrismaModule {
 
   //   var output = solc.compile(contractSol.toString());
 
-  //   console.log("output", output);
+
 
 
   //   if (contractsSource) {

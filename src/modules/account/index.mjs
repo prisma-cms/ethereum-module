@@ -42,14 +42,15 @@ const getAccounts = async function (method, source, args, ctx, info) {
 }
 
 
-const ethAccounts = async function (source, args, ctx, info) {
+// const ethAccounts = async function (source, args, ctx, info) {
 
-  const {
-    web3,
-  } = ctx;
+//   const {
+//     web3,
+//   } = ctx;
 
-  return getAccounts(web3.eth.getAccounts);
-}
+//   return getAccounts(web3.eth.getAccounts);
+// }
+
 
 const ethPersonalAccounts = async function (source, args, ctx, info) {
 
@@ -197,20 +198,21 @@ class AccountModule extends PrismaModule {
 
     super(props);
 
-    Object.assign(this, {
-      Query: {
-        ethCoinbase,
-        ethAccounts,
-        ethPersonalAccounts,
-        ethBalance,
-      },
-      Mutation: {
-        ethUnlockPersonalAccount,
-        ethCreatePersonalAccountProcessor: this.ethCreatePersonalAccountProcessor.bind(this),
-      },
-    });
+    this.Query = {
+      ethCoinbase,
+      ethAccount: this.ethAccount,
+      ethAccounts: this.ethAccounts,
+      ethAccountsConnection: this.ethAccountsConnection,
+      ethPersonalAccounts,
+      ethBalance,
+    };
 
-  }
+    this.Mutation = {
+      ethUnlockPersonalAccount,
+      ethCreatePersonalAccountProcessor: this.ethCreatePersonalAccountProcessor.bind(this),
+    }
+  };
+
 
 
   getProcessor(ctx) {
@@ -226,6 +228,24 @@ class AccountModule extends PrismaModule {
   ethCreatePersonalAccountProcessor(source, args, ctx, info) {
 
     return this.getProcessor(ctx).createWithResponse("PersonalAccount", args, info);
+  }
+
+
+  ethAccount(source, args, ctx, info) {
+
+    return ctx.db.query.ethAccount(args, info);
+  }
+
+
+  ethAccounts(source, args, ctx, info) {
+
+    return ctx.db.query.ethAccounts(args, info);
+  }
+
+
+  ethAccountsConnection(source, args, ctx, info) {
+    
+    return ctx.db.query.ethAccountsConnection(args, info);
   }
 
 

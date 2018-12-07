@@ -13,7 +13,6 @@ enum EthAmountConvert{
 }
 
 type EthAccount{
-  address: String!
   balance(
     convert: EthAmountConvert
   ): Float

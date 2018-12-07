@@ -2,5 +2,6 @@
 type User {
   id: ID! @unique
   EthContractsCreated: [EthContract!]! @relation(name: "EthContractCreatedBy")
-  ethWallet: String @unique
+  EthContractsDeployed: [EthDeployedContract!]! @relation(name: "EthDeployedContractCreatedBy")
+  EthAccounts: [EthAccount!]! @relation(name: "EthAccountCreatedBy")
 }

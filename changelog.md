@@ -1,3 +1,7 @@
+1.4.0
+===============================
+- Added contract deployment
+
 1.3.0
 ===============================
 - Added balance converter
