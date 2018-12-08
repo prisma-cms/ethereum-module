@@ -26,11 +26,11 @@ export class EthTransactionProcessor extends PrismaProcessor {
       currentUser,
     } = this.ctx;
 
-    const {
+    let {
       data: {
         privateKey,
         type,
-        params,
+        params = [],
         ...data
       },
       ...otherArgs
@@ -45,8 +45,43 @@ export class EthTransactionProcessor extends PrismaProcessor {
       return this.addError("Необходимо авторизоваться");
     }
 
-
     let address;
+
+
+    const ethAccount = await this.getUserEthAccount(currentUserId);
+
+
+    if (!ethAccount) {
+      return this.addError("Не был получен кошелек пользователя");
+    }
+
+    const {
+      address: from,
+    } = ethAccount;
+
+
+    if (!from) {
+      this.addFieldError("from", "Не был указан отправитель");
+    }
+
+
+    const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+
+    if (!account) {
+      return this.addError("Приватный ключ не был дешифрован");
+    }
+
+
+    const {
+      address: accountAddress,
+    } = account;
+
+
+    if (accountAddress.toLowerCase() !== from.toLowerCase()) {
+      return this.addError("Аккаунт по приватному ключу и аккаунт пользователя не совпадают");
+    }
+
+    params.unshift(from);
 
 
     switch (type) {
@@ -60,8 +95,6 @@ export class EthTransactionProcessor extends PrismaProcessor {
 
 
     if (!this.hasErrors()) {
-
-      console.log("address ", address, typeof address);
 
       if (!address) {
         return this.addError("Не был получен адрес транзакции");
@@ -98,6 +131,25 @@ export class EthTransactionProcessor extends PrismaProcessor {
   }
 
 
+  async getUserEthAccount(userId) {
+
+    const {
+      db,
+    } = this.ctx;
+
+    const ethAccounts = await db.query.ethAccounts({
+      first: 1,
+      where: {
+        CreatedBy: {
+          id: userId,
+        },
+      },
+    });
+
+    return ethAccounts && ethAccounts[0] || null;
+  }
+
+
   async sendEth(args, currentUserId) {
 
     const {
@@ -116,27 +168,14 @@ export class EthTransactionProcessor extends PrismaProcessor {
     } = args;
 
 
-    // const account = web3.eth.accounts.privateKeyToAccount(privateKey);
-
     privateKey = new Buffer(privateKey.replace(/^0x/, ''), 'hex');
-
-    from = from && from.toLowerCase() || null;
-    to = to && to.toLowerCase() || null;
-
-    if (!from) {
-      this.addFieldError("from", "Не был указан отправитель");
-    }
-
-    if (!to) {
-      this.addFieldError("to", "Не был указан получатель");
-    }
 
 
     if (this.hasErrors()) {
       return;
     }
 
-    let value = web3.utils.toWei(String(amount), 'ether');
+    let value = web3.utils.toWei(String(amount).replace(",", "."), 'ether');
     value = web3.utils.toHex(value);
 
     let transactionCount = await web3.eth.getTransactionCount(from);
@@ -146,10 +185,9 @@ export class EthTransactionProcessor extends PrismaProcessor {
       value,
       to,
       gasLimit: web3.utils.toHex(21000),
-      gasPrice: web3.utils.toHex(4000000000000),
+      gasPrice: web3.utils.toHex(3 * 10 ** 9),
     };
 
-    // console.log(chalk.green("rawTx"), rawTx);
 
     var tx = new Tx(rawTx);
     tx.sign(privateKey);
@@ -159,19 +197,42 @@ export class EthTransactionProcessor extends PrismaProcessor {
 
     return new Promise((resolve, reject) => {
 
+      // let confirmationCount = 0;
+      // const minConfirmations = 3;
+
+      let transactionHash;
+
       web3.eth.sendSignedTransaction("0x" + serializedTx.toString('hex'), (error, txHash) => {
-        // console.log(chalk.green("sendSignedTransaction error, txHash"), error, txHash);
+        console.log(chalk.green("sendSignedTransaction error, txHash"), error, txHash);
 
         if (error) {
           reject(error);
+          return;
         }
-        // else 
+        // else  
+        transactionHash = txHash;
         resolve(txHash);
       })
         .on('confirmation', (confirmationNumber, receipt) => {
           console.log(chalk.green('confirmation'), confirmationNumber);
+
+          // confirmationCount++;
+
+          // if (minConfirmations === confirmationCount) {
+          //   return resolve(transactionHash);
+          // }
+
         })
-        .on('error', reject);
+        .on('error', reject)
+        
+        /**
+         * Error: Failed to check for transaction receipt
+         * if use this
+         */
+        // .then(function (receipt) {
+        //   console.log("sendSignedTransaction then receipt");
+        //   return ;
+        // });
 
     });
 
@@ -196,6 +257,16 @@ class AccountModule extends PrismaModule {
 
     this.Mutation = {
       createEthTransactionProcessor: this.createEthTransactionProcessor.bind(this),
+    }
+
+
+    this.Subscription = {
+      ethTransaction: {
+        subscribe: async (parent, args, ctx, info) => {
+
+          return ctx.db.subscription.ethTransaction({}, info);
+        },
+      },
     }
 
 
