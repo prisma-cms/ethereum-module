@@ -65,7 +65,16 @@ export class EthTransactionProcessor extends PrismaProcessor {
     }
 
 
-    const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+    let account;
+
+
+    try {
+      account = web3.eth.accounts.privateKeyToAccount(privateKey);
+    }
+    catch (error) {
+      console.error(chalk.red("privateKeyToAccount Error"), error);
+    }
+
 
     if (!account) {
       return this.addError("Приватный ключ не был дешифрован");

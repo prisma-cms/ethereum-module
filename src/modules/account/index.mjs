@@ -3,6 +3,7 @@
 import PrismaModule from "@prisma-cms/prisma-module";
 
 import PrismaProcessor from "@prisma-cms/prisma-processor";
+import chalk from "chalk";
 
 const ethCoinbase = async function (source, args, ctx, info) {
 
@@ -92,32 +93,39 @@ const ethBalance = async function (source, args, ctx, info) {
   } = ctx;
 
 
-  let result = await web3.eth.getBalance(address)
-    .then(balance => {
+  let result;
 
-      // console.log("balance", balance, typeof balance);
+  try {
 
-      if (balance) {
+    result = await web3.eth.getBalance(address)
+      .then(balance => {
 
-        // switch (convert) {
+        // console.log("balance", balance, typeof balance);
 
-        //   case 'ether':
+        if (balance) {
 
-        //     balance = web3.utils.fromWei(balance, 'ether');
-        //     break;
+          // switch (convert) {
 
-        // }
+          //   case 'ether':
 
-        balance = web3.utils.fromWei(balance, convert);
+          //     balance = web3.utils.fromWei(balance, 'ether');
+          //     break;
 
-      }
+          // }
 
-      return balance;
+          balance = web3.utils.fromWei(balance, convert);
 
-    })
-    .catch(e => {
-      throw (e);
-    });
+        }
+
+        return balance;
+
+      })
+
+  }
+  catch (error) {
+
+    console.error(chalk.red("Get balance error"), error);
+  }
 
 
 
@@ -244,7 +252,7 @@ class AccountModule extends PrismaModule {
 
 
   ethAccountsConnection(source, args, ctx, info) {
-    
+
     return ctx.db.query.ethAccountsConnection(args, info);
   }
 
