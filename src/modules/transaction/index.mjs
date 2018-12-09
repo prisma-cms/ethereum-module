@@ -75,6 +75,12 @@ export class EthTransactionProcessor extends PrismaProcessor {
 
     let account;
 
+    if (!privateKey) {
+      return this.addFieldError("privateKey", "Не был указан приватный ключ");
+    }
+    else if (!/^0x/.test(privateKey)) {
+      return this.addFieldError("privateKey", "Приватный ключ должен начинаться с 0x");
+    }
 
     try {
       account = web3.eth.accounts.privateKeyToAccount(privateKey);
@@ -85,7 +91,7 @@ export class EthTransactionProcessor extends PrismaProcessor {
 
 
     if (!account) {
-      return this.addError("Приватный ключ не был дешифрован");
+      return this.addFieldError("privateKey", "Приватный ключ не был дешифрован");
     }
 
 
@@ -639,11 +645,11 @@ export class EthTransactionProcessor extends PrismaProcessor {
         //     <h3>
         //       Данные вашего контракта
         //     </h3>
-  
+
         //     <p>
         //       <strong>Адрес:</strong> ${contractAddress}
         //     </p>
-  
+
         //     <p>
         //       <strong>Приватный ключ:</strong> ${contractPrivateKey}
         //     </p>
