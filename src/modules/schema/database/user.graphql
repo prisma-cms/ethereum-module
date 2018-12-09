@@ -1,8 +1,8 @@
 
 type User {
   id: ID! @unique
-  EthContractsCreated: [EthContract!]! @relation(name: "EthContractCreatedBy")
-  EthContractsDeployed: [EthDeployedContract!]! @relation(name: "EthDeployedContractCreatedBy")
+  EthContractSourcesCreated: [EthContractSource!]! @relation(name: "EthContractSourceCreatedBy")
+  # EthContractsDeployed: [EthDeployedContract!]! @relation(name: "EthDeployedContractCreatedBy")
   EthAccounts: [EthAccount!]! @relation(name: "EthAccountCreatedBy")
-  EthTransactions: [EthTransaction!]! @relation(name: "EthTransactionCreatedBy")
+  # EthTransactions: [EthTransaction!]! @relation(name: "EthTransactionCreatedBy")
 }

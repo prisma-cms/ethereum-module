@@ -9,5 +9,9 @@ type EthTransactionResponse{
 input EthTransactionCreateInput {
   privateKey: String!
   type: EthTransactionTypes!
-  params: Json
+  # params: Json
+  to: String
+  amount: Float
+  gasPrice: Int
+  contractSourceId: ID
 }

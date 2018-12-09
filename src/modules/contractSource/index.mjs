@@ -8,14 +8,14 @@ import chalk from "chalk";
 
 
 
-export class EthContractProcessor extends PrismaProcessor {
+export class EthContractSourceProcessor extends PrismaProcessor {
 
 
   constructor(props) {
 
     super(props);
 
-    this.objectType = "ethContract";
+    this.objectType = "ethContractSource";
 
   }
 
@@ -67,7 +67,7 @@ export class EthContractProcessor extends PrismaProcessor {
     } = currentUser || {};
 
 
-    const contract = await this.query("ethContract", {
+    const contractSource = await this.query("ethContractSource", {
       where,
     }, `{
       id
@@ -80,7 +80,7 @@ export class EthContractProcessor extends PrismaProcessor {
       CreatedBy: {
         id: createdById,
       },
-    } = contract;
+    } = contractSource;
 
 
 
@@ -137,7 +137,7 @@ export class EthContractProcessor extends PrismaProcessor {
 
 
 
-  async deployEthContractProcessor(objectType, args, info) {
+  async deployEthContractSourceProcessor(objectType, args, info) {
 
     let {
       where,
@@ -190,7 +190,7 @@ export class EthContractProcessor extends PrismaProcessor {
     }
 
 
-    const contract = await this.query("ethContract", {
+    const contractSource = await this.query("ethContractSource", {
       where,
     }, `{
       id
@@ -202,13 +202,13 @@ export class EthContractProcessor extends PrismaProcessor {
     }`);
 
     const {
-      id: contractId,
+      id: contractSourceId,
       name,
       source,
       CreatedBy: {
         id: createdById,
       },
-    } = contract;
+    } = contractSource;
 
 
 
@@ -233,11 +233,11 @@ export class EthContractProcessor extends PrismaProcessor {
     else {
 
 
-      let contractsSource;
+      let contractSourcesSource;
 
 
       try {
-        contractsSource = solc.compile(source);
+        contractSourcesSource = solc.compile(source);
       }
       catch (error) {
 
@@ -247,23 +247,23 @@ export class EthContractProcessor extends PrismaProcessor {
 
 
 
-      let contracts = [];
+      let contractSources = [];
 
-      if (contractsSource) {
+      if (contractSourcesSource) {
 
-        for (var contractName in contractsSource.contracts) {
+        for (var contractSourceName in contractSourcesSource.contractSources) {
 
-          const contract = contractsSource.contracts[contractName];
+          const contractSource = contractSourcesSource.contractSources[contractSourceName];
 
           let {
-            interface: contractInterface,
-          } = contract;
+            interface: contractSourceInterface,
+          } = contractSource;
 
-          if (contractInterface) {
+          if (contractSourceInterface) {
 
             try {
 
-              contractInterface = JSON.parse(contractInterface);
+              contractSourceInterface = JSON.parse(contractSourceInterface);
 
             }
             catch (e) {
@@ -276,16 +276,16 @@ export class EthContractProcessor extends PrismaProcessor {
 
 
 
-          contracts.push({
-            ...contract,
-            name: contractName.replace(/^:*/, ''),
-            abi: contractInterface,
+          contractSources.push({
+            ...contractSource,
+            name: contractSourceName.replace(/^:*/, ''),
+            abi: contractSourceInterface,
           });
 
         }
       }
 
-      let contractForDeploy = contracts.find(n => n.name === name);
+      let contractSourceForDeploy = contractSources.find(n => n.name === name);
 
 
 
@@ -294,7 +294,7 @@ export class EthContractProcessor extends PrismaProcessor {
 
       // return;
 
-      if (!contractForDeploy) {
+      if (!contractSourceForDeploy) {
         this.addFieldError("name", "Не был получен публикуемый контракт");
       }
       else {
@@ -302,11 +302,11 @@ export class EthContractProcessor extends PrismaProcessor {
         const {
           abi,
           bytecode,
-        } = contractForDeploy;
+        } = contractSourceForDeploy;
 
 
 
-        await this.ethDeployContract({
+        await this.ethDeployContractSource({
           abi,
           bytecode,
           from,
@@ -317,7 +317,7 @@ export class EthContractProcessor extends PrismaProcessor {
 
 
             const {
-              newContractInstance,
+              newContractSourceInstance,
               txHash,
             } = deployResult;
 
@@ -327,7 +327,7 @@ export class EthContractProcessor extends PrismaProcessor {
             const {
               _jsonInterface,
               _address,
-            } = newContractInstance;
+            } = newContractSourceInstance;
 
             Object.assign(data, {
               Deployed: {
@@ -369,14 +369,14 @@ export class EthContractProcessor extends PrismaProcessor {
 
 
 
-  async ethDeployContract(args) {
+  async ethDeployContractSource(args) {
 
     const {
       web3,
     } = this.ctx;
 
     let {
-      abi: contractInterface,
+      abi: contractSourceInterface,
       bytecode,
       params,
       from,
@@ -404,14 +404,14 @@ export class EthContractProcessor extends PrismaProcessor {
     }
 
 
-    // const contractSource = await contract(source, args, ctx).then(r => r).catch(e => {
+    // const contractSourceSource = await contractSource(source, args, ctx).then(r => r).catch(e => {
     //   throw (e);
     // });
 
 
 
 
-    var myContract = new web3.eth.Contract(contractInterface);
+    var myContractSource = new web3.eth.ContractSource(contractSourceInterface);
 
 
 
@@ -430,7 +430,7 @@ export class EthContractProcessor extends PrismaProcessor {
 
       let txHash;
 
-      myContract.deploy({
+      myContractSource.deploy({
         data,
         arguments: params,
       })
@@ -457,12 +457,12 @@ export class EthContractProcessor extends PrismaProcessor {
         .on('confirmation', function (confirmationNumber, receipt) {
 
         })
-        .then(function (newContractInstance) {
+        .then(function (newContractSourceInstance) {
 
 
 
           resolve({
-            newContractInstance,
+            newContractSourceInstance,
             txHash,
           });
         });
@@ -478,21 +478,21 @@ export class EthContractProcessor extends PrismaProcessor {
 
 
 
-const ethContract = async function (source, args, ctx, info) {
+const ethContractSource = async function (source, args, ctx, info) {
 
 
   const {
     name,
   } = args;
 
-  const result = await ethContracts(source, args, ctx);
+  const result = await ethContractSources(source, args, ctx);
 
 
   return result ? result.find(n => n.name === name) : null;
 }
 
 
-const ethContractByAddress = async function (source, args, ctx, info) {
+const ethContractSourceByAddress = async function (source, args, ctx, info) {
 
   const {
     web3,
@@ -504,38 +504,38 @@ const ethContractByAddress = async function (source, args, ctx, info) {
   } = args;
 
 
-  const contractSource = await contract(source, args, ctx).then(r => r).catch(e => {
+  const contractSourceSource = await contractSource(source, args, ctx).then(r => r).catch(e => {
     throw (e);
   });
 
-  if (!contractSource) {
-    throw ("Can not get contract");
+  if (!contractSourceSource) {
+    throw ("Can not get contractSource");
   }
 
   const {
-    abi: contractInterface,
+    abi: contractSourceInterface,
     bytecode,
-  } = contractSource;
+  } = contractSourceSource;
 
 
-  var myContract = new web3.eth.Contract(contractInterface);
+  var myContractSource = new web3.eth.ContractSource(contractSourceInterface);
 
 
   return new Promise((resolve, reject) => {
 
 
-    myContract.options.address = address;
+    myContractSource.options.address = address;
 
 
 
-    resolve(myContract);
+    resolve(myContractSource);
 
   });
 
 }
 
 
-const callContractMethod = async function (contractMethod, source, args, ctx, info) {
+const callContractSourceMethod = async function (contractSourceMethod, source, args, ctx, info) {
 
 
 
@@ -549,10 +549,10 @@ const callContractMethod = async function (contractMethod, source, args, ctx, in
     web3,
   } = ctx;
 
-  const contract = await ethContractByAddress(source, args, ctx);
+  const contractSource = await ethContractSourceByAddress(source, args, ctx);
 
-  if (!contract) {
-    throw (new Error("Can not get contract"));
+  if (!contractSource) {
+    throw (new Error("Can not get contractSource"));
   }
 
 
@@ -574,13 +574,13 @@ const callContractMethod = async function (contractMethod, source, args, ctx, in
 
   const {
     methods,
-  } = contract;
+  } = contractSource;
 
   if (!methods || !methods[method]) {
     throw (new Error("Can not get method"));
   }
 
-  const result = await methods[method].apply(this, params)[contractMethod]({
+  const result = await methods[method].apply(this, params)[contractSourceMethod]({
     from,
     gas: 3000000,
   })
@@ -630,7 +630,7 @@ const mint = async function (source, args, ctx, info) {
 
 
 
-  const result = await ethContractRead(source, {
+  const result = await ethContractSourceRead(source, {
     ...other,
     method: "mint",
     params: [to, amount],
@@ -677,7 +677,7 @@ const ethChargeUserBalance = async function (source, args, ctx, info) {
 
 
 
-  const result = await ethContractRead(source, {
+  const result = await ethContractSourceRead(source, {
     ...other,
     method: "ethChargeUserBalance",
     params: [to, amount],
@@ -688,21 +688,21 @@ const ethChargeUserBalance = async function (source, args, ctx, info) {
   return result;
 }
 
-const ethContractCall = async function (source, args, ctx, info) {
+const ethContractSourceCall = async function (source, args, ctx, info) {
 
-  return callContractMethod("call", source, args, ctx, info);
+  return callContractSourceMethod("call", source, args, ctx, info);
 }
 
-const ethContractRead = async function (source, args, ctx, info) {
+const ethContractSourceRead = async function (source, args, ctx, info) {
 
-  return callContractMethod("send", source, args, ctx, info);
+  return callContractSourceMethod("send", source, args, ctx, info);
 }
 
 
 
 
 
-class ContractModule extends PrismaModule {
+class ContractSourceModule extends PrismaModule {
 
 
   constructor(props = {}) {
@@ -710,39 +710,39 @@ class ContractModule extends PrismaModule {
     super(props);
 
     this.Query = {
-      // ethContract,
-      // ethContracts: this.ethContracts,
-      // ethContractByAddress,
+      // ethContractSource,
+      // ethContractSources: this.ethContractSources,
+      // ethContractSourceByAddress,
 
-      ethContractsConnection: this.ethContractsConnection,
-      ethContracts: this.ethContracts,
-      ethContract: this.ethContract,
+      ethContractSourcesConnection: this.ethContractSourcesConnection,
+      ethContractSources: this.ethContractSources,
+      ethContractSource: this.ethContractSource,
 
-      ethDeployedContractsConnection: this.ethDeployedContractsConnection,
-      ethDeployedContracts: this.ethDeployedContracts,
-      ethDeployedContract: this.ethDeployedContract,
+      // ethDeployedContractSourcesConnection: this.ethDeployedContractSourcesConnection,
+      // ethDeployedContractSources: this.ethDeployedContractSources,
+      // ethDeployedContractSource: this.ethDeployedContractSource,
 
     };
 
     this.Mutation = {
-      // ethDeployContract,
-      // ethContractCall,
-      // ethContractRead,
+      // ethDeployContractSource,
+      // ethContractSourceCall,
+      // ethContractSourceRead,
       // mint,
       // ethChargeUserBalance,
-      createEthContractProcessor: this.createEthContractProcessor.bind(this),
-      updateEthContractProcessor: this.updateEthContractProcessor.bind(this),
-      deployEthContractProcessor: this.deployEthContractProcessor.bind(this),
+      createEthContractSourceProcessor: this.createEthContractSourceProcessor.bind(this),
+      updateEthContractSourceProcessor: this.updateEthContractSourceProcessor.bind(this),
+      // deployEthContractSourceProcessor: this.deployEthContractSourceProcessor.bind(this),
     }
 
-    this.EthContractResponse = {
+    this.EthContractSourceResponse = {
       data: (source, args, ctx, info) => {
 
         const {
           id,
         } = source.data || {};
 
-        return id ? ctx.db.query.ethContract({
+        return id ? ctx.db.query.ethContractSource({
           where: {
             id,
           },
@@ -759,85 +759,85 @@ class ContractModule extends PrismaModule {
 
 
   getProcessorClass() {
-    return EthContractProcessor;
+    return EthContractSourceProcessor;
   }
 
 
-  createEthContractProcessor(source, args, ctx, info) {
+  createEthContractSourceProcessor(source, args, ctx, info) {
 
-    return this.getProcessor(ctx).createWithResponse("EthContract", args, info);
+    return this.getProcessor(ctx).createWithResponse("EthContractSource", args, info);
   }
 
-  updateEthContractProcessor(source, args, ctx, info) {
+  updateEthContractSourceProcessor(source, args, ctx, info) {
 
-    return this.getProcessor(ctx).updateWithResponse("EthContract", args, info);
+    return this.getProcessor(ctx).updateWithResponse("EthContractSource", args, info);
   }
 
-  deployEthContractProcessor(source, args, ctx, info) {
+  deployEthContractSourceProcessor(source, args, ctx, info) {
 
-    return this.getProcessor(ctx).deployEthContractProcessor("EthContract", args, info);
-  }
-
-
-  async ethContractsConnection(source, args, ctx, info) {
-    return ctx.db.query.ethContractsConnection(args, info);
-  }
-
-  async ethContracts(source, args, ctx, info) {
-    return ctx.db.query.ethContracts(args, info);
-  }
-
-  async ethContract(source, args, ctx, info) {
-    return ctx.db.query.ethContract(args, info);
+    return this.getProcessor(ctx).deployEthContractSourceProcessor("EthContractSource", args, info);
   }
 
 
-  async ethDeployedContractsConnection(source, args, ctx, info) {
-    return ctx.db.query.ethDeployedContractsConnection(args, info);
+  async ethContractSourcesConnection(source, args, ctx, info) {
+    return ctx.db.query.ethContractSourcesConnection(args, info);
   }
 
-  async ethDeployedContracts(source, args, ctx, info) {
-    return ctx.db.query.ethDeployedContracts(args, info);
+  async ethContractSources(source, args, ctx, info) {
+    return ctx.db.query.ethContractSources(args, info);
   }
 
-  async ethDeployedContract(source, args, ctx, info) {
-    return ctx.db.query.ethDeployedContract(args, info);
+  async ethContractSource(source, args, ctx, info) {
+    return ctx.db.query.ethContractSource(args, info);
   }
 
-  // async ethContracts(source, args, ctx, info) {
+
+  async ethDeployedContractSourcesConnection(source, args, ctx, info) {
+    return ctx.db.query.ethDeployedContractSourcesConnection(args, info);
+  }
+
+  async ethDeployedContractSources(source, args, ctx, info) {
+    return ctx.db.query.ethDeployedContractSources(args, info);
+  }
+
+  async ethDeployedContractSource(source, args, ctx, info) {
+    return ctx.db.query.ethDeployedContractSource(args, info);
+  }
+
+  // async ethContractSources(source, args, ctx, info) {
 
   //   const {
-  //     contractsSource,
+  //     contractSourcesSource,
   //   } = ctx;
 
-  //   let contracts = [];
+  //   let contractSources = [];
 
 
-  //   const contractSol = `
+  //   const contractSourceSol = `
 
   //   `;
 
 
-  //   var output = solc.compile(contractSol.toString());
+  //   var output = solc.compile(contractSourceSol.toString());
 
 
 
 
-  //   if (contractsSource) {
+  //   if (contractSourcesSource) {
 
-  //     for (var contractName in contractsSource.contracts) {
+  //     for (var contractSourceName in contractSourcesSource.contractSources) {
 
-  //       const contract = contractsSource.contracts[contractName];
+  //       const contractSource = contractSourcesSource.contractSources[contractSourceName];
 
   //       let {
-  //         abi: contractInterface,
-  //       } = contract;
+  //         abi: contractSourceInterface,
+  //       } = contractSource;
 
-  //       if (contractInterface) {
+  //       if (contractSourceInterface) {
 
   //         try {
 
-  //           contractInterface = JSON.parse(contractInterface);
+  //           contractSourceInterface = JSON.parse(contractSourceInterface);
 
   //         }
   //         catch (e) {
@@ -846,21 +846,21 @@ class ContractModule extends PrismaModule {
 
   //       }
 
-  //       contracts.push({
-  //         ...contract,
-  //         name: contractName.replace(/^:*/, ''),
-  //         abi: contractInterface,
+  //       contractSources.push({
+  //         ...contractSource,
+  //         name: contractSourceName.replace(/^:*/, ''),
+  //         abi: contractSourceInterface,
   //       });
 
   //     }
   //   }
 
-  //   return contracts;
+  //   return contractSources;
   // }
 
 
 
-  // EthContractResponse() {
+  // EthContractSourceResponse() {
 
   //   return {
   //     data: (source, args, ctx, info) => {
@@ -869,7 +869,7 @@ class ContractModule extends PrismaModule {
   //         id,
   //       } = source.data || {};
 
-  //       return id ? ctx.db.query.ethContract({
+  //       return id ? ctx.db.query.ethContractSource({
   //         where: {
   //           id,
   //         },
@@ -892,7 +892,7 @@ class ContractModule extends PrismaModule {
 
 
     Object.assign(resolvers, {
-      EthContractResponse: this.EthContractResponse,
+      EthContractSourceResponse: this.EthContractSourceResponse,
     });
 
     return resolvers;
@@ -900,4 +900,4 @@ class ContractModule extends PrismaModule {
 
 }
 
-export default ContractModule;
+export default ContractSourceModule;

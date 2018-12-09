@@ -1,14 +1,14 @@
 
 
 
-type EthContractResponse {
+type EthContractSourceResponse {
   success: Boolean!
   message: String
   errors: [Error!]!
-  data: EthContract
+  data: EthContractSource
 }
 
-input EthContractCreateInput {
+input EthContractSourceCreateInput {
   name: String!
   description: Json
   source: String
@@ -16,7 +16,7 @@ input EthContractCreateInput {
   abi: Json
 }
 
-input EthContractUpdateInput {
+input EthContractSourceUpdateInput {
   name: String
   description: Json
   source: String
@@ -24,9 +24,7 @@ input EthContractUpdateInput {
   abi: Json
 }
 
-input EthContractDeployInput {
-  # name: String!
-  # from: String!
+input EthContractSourceDeployInput {
   password: String
   params: Json
   gas: Int

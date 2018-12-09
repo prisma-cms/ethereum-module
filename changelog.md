@@ -1,5 +1,11 @@
-1.4.3
+1.5.0
 ===============================
+- Core refactoring
+- Removed EthContract
+- Added EthContractSource
+- Added deploy contracts
+- Added transfer Eth
+- Remove EthTransactionCreateInput::params
 
 1.4.2
 ===============================

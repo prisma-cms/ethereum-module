@@ -1,0 +1,11 @@
+
+type EthContractSource{
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: Json
+  source: String
+  CreatedBy: User! @relation(name: "EthContractSourcesCreatedBy")
+  Accounts: [EthAccount!]! @relation(name: "EthContractSourceAccounts")
+}

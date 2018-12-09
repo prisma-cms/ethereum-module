@@ -11,7 +11,18 @@ type EthTransaction{
   id: ID! @unique
   createdAt: DateTime!
   updatedAt: DateTime!
+  chainId: Int!
+
+  """Eth or tokens in ether"""
+  amount: Float
+
+  """Can be empty when deploying a contract"""
+  Sender: EthAccount @relation(name: "EthTransactionSender")
+  Receiver: EthAccount @relation(name: "EthTransactionReceiver")
+
+  """EthAccount created by this transaction"""
+  Account: EthAccount @relation(name: "EthAccountCreatedTransaction")
+
   address: String! @unique
   type: EthTransactionTypes!
-  CreatedBy: User! @relation(name: "EthTransactionCreatedBy")
 }

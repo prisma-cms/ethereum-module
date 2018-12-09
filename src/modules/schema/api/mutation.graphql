@@ -3,20 +3,20 @@
 type Mutation {
 
 
-  createEthContractProcessor(
-    data: EthContractCreateInput!
-  ): EthContractResponse!
+  createEthContractSourceProcessor(
+    data: EthContractSourceCreateInput!
+  ): EthContractSourceResponse!
 
-  updateEthContractProcessor(
-    data: EthContractUpdateInput!
-    where: EthContractWhereUniqueInput!
-  ): EthContractResponse!
+  updateEthContractSourceProcessor(
+    data: EthContractSourceUpdateInput!
+    where: EthContractSourceWhereUniqueInput!
+  ): EthContractSourceResponse!
 
 
-  deployEthContractProcessor(
-    data: EthContractDeployInput!
-    where: EthContractWhereUniqueInput!
-  ): EthContractResponse
+  # deployEthContractProcessor(
+  #   data: EthContractDeployInput!
+  #   where: EthContractWhereUniqueInput!
+  # ): EthContractResponse
   
   ethContractCall(
     name: String!
@@ -34,14 +34,6 @@ type Mutation {
     from: String
   ): Json
   
-  # ethTokenMint(
-  #   masterPassword: String!,
-  #   name: String!
-  #   address: String!
-  #   to:String!
-  #   amount:Long!
-  # ): Json
-  
   ethChargeUserBalance(
     masterPassword: String!,
     name: String!
@@ -57,9 +49,9 @@ type Mutation {
   ): Boolean!
 
  
-  ethCreatePersonalAccountProcessor(
-    data: EthPersonalAccountCreateInput!
-  ): EthPersonalAccountResponse! 
+  # ethCreatePersonalAccountProcessor(
+  #   data: EthPersonalAccountCreateInput!
+  # ): EthPersonalAccountResponse! 
 
   createEthTransactionProcessor(
     data: EthTransactionCreateInput!

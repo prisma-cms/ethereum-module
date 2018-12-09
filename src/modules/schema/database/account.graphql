@@ -1,7 +1,29 @@
 
+enum EthAccountType{
+  Account
+  Contract
+}
 
 type EthAccount{
   id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String
+  chainId: Int!
   address: String! @unique
+  type: EthAccountType! @value(default: Account)
   CreatedBy: User! @relation(name: "EthAccountCreatedBy")
+
+  """Transaction that was created"""
+  Transaction: EthTransaction @relation(name: "EthAccountCreatedTransaction")
+
+  IncomeTransactions: [EthTransaction!]! @relation(name: "EthTransactionReceiver")
+  OutcomeTransactions: [EthTransaction!]! @relation(name: "EthTransactionSender")
+
+  description: Json
+  source: String
+  bytecode: String
+  abi: Json
+  ContractSource: EthContractSource @relation(name: "EthContractSourceAccounts")
+
 }

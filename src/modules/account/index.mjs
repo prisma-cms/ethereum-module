@@ -217,7 +217,7 @@ class AccountModule extends PrismaModule {
 
     this.Mutation = {
       ethUnlockPersonalAccount,
-      ethCreatePersonalAccountProcessor: this.ethCreatePersonalAccountProcessor.bind(this),
+      // ethCreatePersonalAccountProcessor: this.ethCreatePersonalAccountProcessor.bind(this),
     }
   };
 
