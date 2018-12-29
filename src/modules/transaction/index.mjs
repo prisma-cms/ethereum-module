@@ -285,6 +285,7 @@ export class EthTransactionProcessor extends PrismaProcessor {
         privateKey,
         contractSourceId,
         gasPrice = 3,
+        amount,
       },
     } = args;
 
@@ -576,11 +577,20 @@ export class EthTransactionProcessor extends PrismaProcessor {
 
     // return;
 
+    let value;
+
+
+    if (amount) {
+      value = web3.utils.toWei(String(amount).replace(",", "."), 'ether');
+      value = web3.utils.toHex(value);
+    }
+
+
     const address = await this.sendTransaction({
       data: deploy.encodeABI(),
-      gasLimit: web3.utils.toHex(3000000),
+      gasLimit: web3.utils.toHex(5000000),
       gasPrice: web3.utils.toHex(gasPrice * 10 ** 9),
-
+      value,
       // Call contract method
       // to: contract.options.address,
       // toCreationAddress: true,
