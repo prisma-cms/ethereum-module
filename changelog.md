@@ -1,6 +1,7 @@
 1.5.2
 ===============================
 - Fix gas limit
+- Upgrade @prisma-cms/module-boilerplate
 
 1.5.1
 ===============================
