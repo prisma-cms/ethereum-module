@@ -106,14 +106,7 @@ class EthModule extends PrismaModule {
 
     Object.assign(resolvers.Mutation, this.Mutation);
 
-    Object.assign(resolvers.Subscription, {
-      ethTransaction: {
-        subscribe: async (parent, args, ctx, info) => {
-
-          return ctx.db.subscription.ethTransaction({}, info);
-        },
-      },
-    });
+    Object.assign(resolvers.Subscription, this.Subscription);
 
 
     Object.assign(resolvers, {

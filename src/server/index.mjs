@@ -13,7 +13,6 @@ const resolvers = module.getResolvers();
 // console.log("resolvers", resolvers);
 
 const {
-  Subscription,
   ...other
 } = resolvers;
 

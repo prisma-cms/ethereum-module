@@ -754,7 +754,7 @@ export class EthTransactionProcessor extends PrismaProcessor {
 }
 
 
-class AccountModule extends PrismaModule {
+class EthTransactionModule extends PrismaModule {
 
 
   constructor(props = {}) {
@@ -776,7 +776,7 @@ class AccountModule extends PrismaModule {
       ethTransaction: {
         subscribe: async (parent, args, ctx, info) => {
 
-          return ctx.db.subscription.ethTransaction({}, info);
+          return ctx.db.subscription.ethTransaction(args, info);
         },
       },
     }
@@ -858,4 +858,4 @@ class AccountModule extends PrismaModule {
 
 }
 
-export default AccountModule;
+export default EthTransactionModule;

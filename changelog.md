@@ -1,3 +1,7 @@
+1.5.4
+===============================
+- Fix subscriptions
+
 1.5.3
 ===============================
 - Added ethTransaction subscription
