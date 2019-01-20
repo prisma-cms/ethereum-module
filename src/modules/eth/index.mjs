@@ -32,12 +32,12 @@ class EthModule extends PrismaModule {
     } = ctx;
 
     // console.log("web3.net", net);
-    
+
     // // console.log("web3.net id", await net.getId());
     // console.log("web3.net getPeerCount", await net.getPeerCount());
-    
+
     const result = {
-      id:  await net.getId(),
+      id: await net.getId(),
       isListening: await net.isListening(),
       peerCount: await net.getPeerCount(),
     }
@@ -65,7 +65,7 @@ class EthModule extends PrismaModule {
   }
 
 
-  async ethTransactionCount(source, args, ctx, info){
+  async ethTransactionCount(source, args, ctx, info) {
 
     const {
       web3: {
@@ -81,7 +81,7 @@ class EthModule extends PrismaModule {
   }
 
 
-  async ethSyncState(source, args, ctx, info){
+  async ethSyncState(source, args, ctx, info) {
 
     const {
       web3: {
@@ -106,7 +106,14 @@ class EthModule extends PrismaModule {
 
     Object.assign(resolvers.Mutation, this.Mutation);
 
-    Object.assign(resolvers.Subscription, this.Subscription);
+    Object.assign(resolvers.Subscription, {
+      ethTransaction: {
+        subscribe: async (parent, args, ctx, info) => {
+
+          return ctx.db.subscription.ethTransaction({}, info);
+        },
+      },
+    });
 
 
     Object.assign(resolvers, {

@@ -1,3 +1,7 @@
+1.5.3
+===============================
+- Added ethTransaction subscription
+
 1.5.2
 ===============================
 - Fix gas limit
