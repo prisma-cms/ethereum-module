@@ -49,6 +49,16 @@ type Mutation {
   ): Boolean!
 
  
+  createEthAccountProcessor(
+    data: EthAccountCreateInput!
+  ): EthAccountResponse! 
+ 
+  updateEthAccountProcessor(
+    where: EthAccountWhereUniqueInput!
+    data: EthAccountUpdateInput!
+  ): EthAccountResponse! 
+
+ 
   # ethCreatePersonalAccountProcessor(
   #   data: EthPersonalAccountCreateInput!
   # ): EthPersonalAccountResponse! 
@@ -56,4 +66,8 @@ type Mutation {
   createEthTransactionProcessor(
     data: EthTransactionCreateInput!
   ): EthTransactionResponse!
+
+  ethRecoverPersonalSignature(
+    data: EthRecoverPersonalSignatureDataInput!
+  ): String
 }

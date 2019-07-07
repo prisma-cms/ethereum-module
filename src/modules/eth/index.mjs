@@ -11,8 +11,12 @@ class EthModule extends PrismaModule {
     Object.assign(this, {
       Query: {
         ethNet: this.ethNet,
+        ethGetTransaction: this.ethGetTransaction,
         ethTransactionCount: this.ethTransactionCount,
         ethSyncState: this.ethSyncState,
+        ethGetBlockNumber: this.ethGetBlockNumber,
+        ethGetBlock: this.ethGetBlock,
+        ethGetBlockTransactionCount: this.ethGetBlockTransactionCount,
       },
       Mutation: {
       },
@@ -40,9 +44,12 @@ class EthModule extends PrismaModule {
       id: await net.getId(),
       isListening: await net.isListening(),
       peerCount: await net.getPeerCount(),
+      networkType: await net.getNetworkType(),
     }
 
     // console.log("web3.net result", result);
+    // await web3.eth.isSyncing()
+    //   .then(console.log);
 
     return result;
 
@@ -81,6 +88,24 @@ class EthModule extends PrismaModule {
   }
 
 
+  async ethGetTransaction(source, args, ctx, info) {
+
+    const {
+      web3: {
+        eth,
+      },
+    } = ctx;
+
+    const {
+      where: {
+        hash,
+      },
+    } = args;
+
+    return await eth.getTransaction(hash);
+  }
+
+
   async ethSyncState(source, args, ctx, info) {
 
     const {
@@ -93,7 +118,71 @@ class EthModule extends PrismaModule {
 
     // console.log("ethSyncState.result", result);
 
-    return result && result || null;
+    return result;
+  }
+
+
+  async ethGetBlockNumber(source, args, ctx, info) {
+
+    const {
+      web3: {
+        eth,
+      },
+    } = ctx;
+
+    const result = await eth.getBlockNumber();
+
+    // console.log("ethSyncState.result", result);
+
+    return result;
+  }
+
+
+  async ethGetBlock(source, args, ctx, info) {
+
+    const {
+      web3: {
+        eth,
+      },
+    } = ctx;
+
+    const {
+      where: {
+        hash,
+        number,
+      },
+    } = args;
+
+    // console.log("ethGetBlock.args", args);
+
+    const result = await eth.getBlock(hash || number);
+
+    // console.log("ethGetBlock.result", result);
+
+    return result;
+  }
+
+
+  async ethGetBlockTransactionCount(source, args, ctx, info) {
+
+    const {
+      web3: {
+        eth,
+      },
+    } = ctx;
+
+    const {
+      where: {
+        hash,
+        number,
+      },
+    } = args;
+
+    const result = await eth.getBlockTransactionCount(hash || number);
+
+    // console.log("ethGetBlockTransactionCount.result", result);
+
+    return result;
   }
 
 

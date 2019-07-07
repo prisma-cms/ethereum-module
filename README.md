@@ -46,3 +46,11 @@ yarn start
 Open in brouser http://localhost:3000
 
 Note that *module-boilerplate* should work on port 4000 or configure [proxySetup](https://github.com/prisma-cms/component-boilerplate/blob/master/src/setupProxy.js).
+
+
+### Use as module
+```
+import EthModule, {
+  Modules,
+} from "@prisma-cms/ethereum-module";
+```

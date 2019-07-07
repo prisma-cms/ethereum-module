@@ -1,3 +1,12 @@
+1.6.0
+===============================
+- Code refactoring
+- Added ethNet::networkType
+- Added ethGetBlockNumber()
+- Added ethGetBlock()
+- Added ethGetBlockTransactionCount()
+- Remove EthAccount::chainId
+
 1.5.5
 ===============================
 - Upgrade web3

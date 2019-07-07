@@ -9,10 +9,13 @@ type EthAccount{
   createdAt: DateTime!
   updatedAt: DateTime!
   name: String
-  chainId: Int!
+  description: Json
+
   address: String! @unique
-  type: EthAccountType! @value(default: Account)
-  CreatedBy: User! @relation(name: "EthAccountCreatedBy")
+
+  """Account or Contract"""
+  type: EthAccountType @default(value: Account)
+  CreatedBy: User @relation(name: "EthAccountCreatedBy")
 
   """Transaction that was created"""
   Transaction: EthTransaction @relation(name: "EthAccountCreatedTransaction")
@@ -20,10 +23,16 @@ type EthAccount{
   IncomeTransactions: [EthTransaction!]! @relation(name: "EthTransactionReceiver")
   OutcomeTransactions: [EthTransaction!]! @relation(name: "EthTransactionSender")
 
-  description: Json
+  """For contracts only"""
   source: String
+
+  """For contracts only"""
   bytecode: String
+
+  """For contracts only"""
   abi: Json
+
+  """For contracts only"""
   ContractSource: EthContractSource @relation(name: "EthContractSourceAccounts")
 
 }

@@ -715,7 +715,7 @@ export class EthTransactionProcessor extends PrismaProcessor {
       let transactionHash;
 
       web3.eth.sendSignedTransaction("0x" + serializedTx.toString('hex'), (error, txHash) => {
-        console.log(chalk.green("sendSignedTransaction error, txHash"), error, txHash);
+        // console.log(chalk.green("sendSignedTransaction error, txHash"), error, txHash);
 
         if (error) {
           reject(error);
@@ -726,7 +726,7 @@ export class EthTransactionProcessor extends PrismaProcessor {
         resolve(txHash);
       })
         .on('confirmation', (confirmationNumber, receipt) => {
-          console.log(chalk.green('confirmation'), confirmationNumber);
+          // console.log(chalk.green('confirmation'), confirmationNumber);
 
           // confirmationCount++;
 

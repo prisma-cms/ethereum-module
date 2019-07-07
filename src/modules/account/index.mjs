@@ -5,201 +5,123 @@ import PrismaModule from "@prisma-cms/prisma-module";
 import PrismaProcessor from "@prisma-cms/prisma-processor";
 import chalk from "chalk";
 
-const ethCoinbase = async function (source, args, ctx, info) {
 
-  const {
-    web3,
-  } = ctx;
-
-
-  const result = await web3.eth.getCoinbase()
-    .then(r => r)
-    .catch(e => {
-      throw (e);
-    });
-
-  // console.log("accounts", result);
-
-  return result ? {
-    address: result,
-  } : null;
-}
-
-
-/**
- * Для получения общих аккаунтов и персональных служат разные методы
- */
-const getAccounts = async function (method, source, args, ctx, info) {
-
-  const result = await method()
-    .then(r => r)
-    .catch(e => {
-      throw (e);
-    });
-
-  console.log("accounts", result);
-
-  return result ? result.map(address => ({ address })) : [];
-}
-
-
-// const ethAccounts = async function (source, args, ctx, info) {
-
-//   const {
-//     web3,
-//   } = ctx;
-
-//   return getAccounts(web3.eth.getAccounts);
-// }
-
-
-const ethPersonalAccounts = async function (source, args, ctx, info) {
-
-  const {
-    web3,
-  } = ctx;
-
-  return getAccounts(web3.eth.personal.getAccounts);
-}
-
-
-const balance = async function (source, args, ctx, info) {
-
-  const {
-    address,
-  } = source;
-
-  if (!address) {
-    return null;
-  }
-
-  return ethBalance(source, {
-    ...args,
-    address,
-  }, ctx, info);
-
-}
-
-
-const ethBalance = async function (source, args, ctx, info) {
-
-  const {
-    address,
-    convert,
-  } = args;
-
-  const {
-    web3,
-  } = ctx;
-
-
-  let result;
-
-  try {
-
-    result = await web3.eth.getBalance(address)
-      .then(balance => {
-
-        // console.log("balance", balance, typeof balance);
-
-        if (balance) {
-
-          // switch (convert) {
-
-          //   case 'ether':
-
-          //     balance = web3.utils.fromWei(balance, 'ether');
-          //     break;
-
-          // }
-
-          balance = web3.utils.fromWei(balance, convert);
-
-        }
-
-        return balance;
-
-      })
-
-  }
-  catch (error) {
-
-    console.error(chalk.red("Get balance error"), error);
-  }
-
-
-
-  // console.log("result", result);
-
-  return result || null;
-}
-
-const ethUnlockPersonalAccount = async function (source, args, ctx, info) {
-
-  const {
-    web3,
-  } = ctx;
-
-  const {
-    address,
-    password,
-    duration,
-  } = args;
-
-
-  const unlockResult = await web3.eth.personal.unlockAccount(address, password, duration)
-    .catch(e => {
-      throw (e);
-    });
-
-  // console.log("result", unlockResult);
-
-  return unlockResult;
-}
-
-
-
-
-export class PersonalAccountProcessor extends PrismaProcessor {
+export class EthAccountProcessor extends PrismaProcessor {
 
   constructor(props) {
 
     super(props);
 
-    this.objectType = "PersonalAccount";
+    this.objectType = "EthAccount";
 
+    this.private = true;
   }
 
 
-  async create(objectType, args, info) {
+  async create(method, args, info) {
 
-    const {
-      web3,
-    } = this.ctx;
+    if (args.data) {
 
-    const {
-      data: {
-        password,
-      },
-    } = args;
+      let {
+        ...data
+      } = args.data;
 
-    // Регистрируем новый кошелек
-    const address = await web3.eth.personal.newAccount(password)
-      .then(r => r)
-      .catch(e => {
-        throw (e)
+
+      Object.assign(data, {
       });
 
-    return {
-      address,
+      args.data = data;
+
     }
 
+    const {
+      id: currentUserId,
+    } = await this.getUser(true);
+
+
+    Object.assign(args.data, {
+      CreatedBy: {
+        connect: {
+          id: currentUserId,
+        },
+      },
+    });
+
+
+    return super.create(method, args, info);
   }
 
+
+  async update(method, args, info) {
+
+    if (args.data) {
+
+      let {
+        CreatedBy,
+        ...data
+      } = args.data;
+
+      args.data = data;
+
+    }
+
+    return super.update(method, args, info);
+  }
+
+
+  async mutate(method, args, info) {
+
+    // console.log("createAccount args", JSON.stringify(args, true, 2));
+
+    if (args.data) {
+
+      let {
+        address,
+        ...data
+      } = args.data;
+
+
+      if (address !== undefined) {
+
+        address = address && address.trim() || null;
+
+        if (!address) {
+          this.addFieldError("address", "Address can not be empty");
+        }
+        else if (!address.startsWith("0x")) {
+          this.addFieldError("address", "Address should to be starts with 0x");
+        }
+
+      }
+
+
+      Object.assign(data, {
+        address,
+      });
+
+      args.data = data;
+
+    }
+
+    await this.checkPermission(method, args, info);
+
+    // console.log("createAccount args.data", JSON.stringify(args.data, true, 2));
+
+    // this.addError("Debug");
+
+    return super.mutate(method, args);
+  }
+
+
+  async delete(method, args, info) {
+
+    return super.delete(method, args);
+  }
 }
 
 
-class AccountModule extends PrismaModule {
+
+class EthAccountModule extends PrismaModule {
 
 
   constructor(props = {}) {
@@ -207,20 +129,16 @@ class AccountModule extends PrismaModule {
     super(props);
 
     this.Query = {
-      ethCoinbase,
       ethAccount: this.ethAccount,
       ethAccounts: this.ethAccounts,
       ethAccountsConnection: this.ethAccountsConnection,
-      ethPersonalAccounts,
-      ethBalance,
     };
 
     this.Mutation = {
-      ethUnlockPersonalAccount,
-      // ethCreatePersonalAccountProcessor: this.ethCreatePersonalAccountProcessor.bind(this),
+      createEthAccountProcessor: this.createEthAccountProcessor.bind(this),
+      updateEthAccountProcessor: this.updateEthAccountProcessor.bind(this),
     }
   };
-
 
 
   getProcessor(ctx) {
@@ -229,13 +147,19 @@ class AccountModule extends PrismaModule {
 
 
   getProcessorClass() {
-    return PersonalAccountProcessor;
+    return EthAccountProcessor;
   }
 
 
-  ethCreatePersonalAccountProcessor(source, args, ctx, info) {
+  createEthAccountProcessor(source, args, ctx, info) {
 
-    return this.getProcessor(ctx).createWithResponse("PersonalAccount", args, info);
+    return this.getProcessor(ctx).createWithResponse("EthAccount", args, info);
+  }
+
+
+  updateEthAccountProcessor(source, args, ctx, info) {
+
+    return this.getProcessor(ctx).updateWithResponse("EthAccount", args, info);
   }
 
 
@@ -272,11 +196,36 @@ class AccountModule extends PrismaModule {
 
 
     Object.assign(resolvers, {
-      EthAccount: {
-        balance: balance,
+      EthAccountResponse: {
+        data: (source, args, ctx, info) => {
+
+          const {
+            id,
+          } = source.data || {};
+
+          return id ? ctx.db.query.ethAccount({
+            where: {
+              id,
+            },
+          }, info) : null;
+        },
       },
-      EthPersonalAccount: {
-        balance: balance,
+      EthAccount: {
+        balance: (source, args, ctx, info) => {
+
+          // console.log("resolvers", ctx.resolvers);
+
+          const {
+            resolvers: {
+              Query: {
+                ethBalance,
+              },
+            },
+          } = ctx;
+
+          return ethBalance(source, args, ctx, info);
+
+        },
       },
     });
 
@@ -285,4 +234,4 @@ class AccountModule extends PrismaModule {
 
 }
 
-export default AccountModule;
+export default EthAccountModule;

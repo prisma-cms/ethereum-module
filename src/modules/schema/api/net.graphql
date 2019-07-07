@@ -2,4 +2,5 @@ type ethNet {
   id: Int!
   isListening: Boolean! 
   peerCount: Int!
+  networkType: String!
 }

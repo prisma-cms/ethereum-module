@@ -17,3 +17,17 @@ type EthAccount{
     convert: EthAmountConvert
   ): Float
 }
+
+ 
+type EthAccountResponse {
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: EthAccount
+}
+
+input EthRecoverPersonalSignatureDataInput {
+  from: String!
+  message: String!
+  signature: String!
+}

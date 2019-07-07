@@ -1,20 +1,19 @@
 
 import startServer from "@prisma-cms/server";
 
-import Module from "../";
+import Module, {
+  Modules,
+} from "../";
 
 import Web3 from "web3";
 
 const module = new Module({
+  modules: Modules,
 });
 
 const resolvers = module.getResolvers();
 
 // console.log("resolvers", resolvers);
-
-const {
-  ...other
-} = resolvers;
 
 const {
   GethServer = "http://localhost:8545",
@@ -45,11 +44,10 @@ const web3 = new Web3(GethServer);
 
 startServer({
   typeDefs: 'src/schema/generated/api.graphql',
-  resolvers: {
-    ...other,
-  },
+  resolvers: resolvers,
   contextOptions: {
     // db: null,
     web3,
+    resolvers,
   },
 });

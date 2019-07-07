@@ -36,4 +36,14 @@ type Query {
   ): Int!
 
   ethSyncState: ethSyncState
+  ethGetBlockNumber: Int!
+  ethGetBlock(
+    where: EthGetBlockWhereInput!
+  ): Json
+  ethGetBlockTransactionCount(
+    where: EthGetBlockWhereInput!
+  ): Int
+  ethGetTransaction(
+    where: EthGetTransactionWhereInput!
+  ): Json
 }
