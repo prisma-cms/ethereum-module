@@ -1,5 +1,5 @@
 
-enum EthTransactionTypes {
+enum EthTransactionType {
   ContractCreate
   ContractRead
   ContractCall
@@ -13,16 +13,34 @@ type EthTransaction{
   updatedAt: DateTime!
   chainId: Int!
 
-  """Eth or tokens in ether"""
+  """Eth or tokens in ether. Equal value"""
   amount: Float
 
-  """Can be empty when deploying a contract"""
+  input: String
+
+  index: Int
+
+  """From. Can be empty when deploying a contract"""
   Sender: EthAccount @relation(name: "EthTransactionSender")
+
+  """To"""
   Receiver: EthAccount @relation(name: "EthTransactionReceiver")
 
   """EthAccount created by this transaction"""
   Account: EthAccount @relation(name: "EthAccountCreatedTransaction")
 
   address: String! @unique
-  type: EthTransactionTypes!
+  type: EthTransactionType
+
+  """Used to obtain the public key"""
+  v: String
+
+  """Used to obtain the public key"""
+  r: String
+
+  """Used to obtain the public key"""
+  s: String
+
+  Block: EthBlock @relation(name: "EthBlockTransactions")
+
 }

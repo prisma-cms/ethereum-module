@@ -160,7 +160,9 @@ class Module extends PrismaModule {
 
     // console.log("ethBalance address", address);
 
-    // return null;
+    if(!web3) {
+      return null;
+    }
 
     try {
 
@@ -198,7 +200,7 @@ class Module extends PrismaModule {
 
     // console.log("result", result);
 
-    return result || null;
+    return result !== undefined ? result : null;
   }
 
 
@@ -244,7 +246,7 @@ class Module extends PrismaModule {
       result = signedBy;
     }
     else {
-      throw new Error ("Signed by not match");
+      throw new Error("Signed by not match");
     }
 
     return result;

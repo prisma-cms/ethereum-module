@@ -8,9 +8,11 @@ type EthTransactionResponse{
 
 input EthTransactionCreateInput {
   privateKey: String!
-  type: EthTransactionTypes!
+  type: EthTransactionType
   # params: Json
   to: String
+
+  """In ether value, not wei"""
   amount: Float
   gasPrice: Int
   contractSourceId: ID

@@ -35,4 +35,7 @@ type EthAccount{
   """For contracts only"""
   ContractSource: EthContractSource @relation(name: "EthContractSourceAccounts")
 
+  """Mined blocks by this account"""
+  BlocksMined: [EthBlock!]! @relation(name: "EthAccountMinedBlocks")
+
 }

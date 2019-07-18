@@ -3,3 +3,11 @@ input EthGetBlockWhereInput {
   hash: String
   number: Int
 }
+
+
+type EthBlockResponse{
+  success: Boolean!
+  message: String
+  errors: [Error!]!
+  data: EthBlock
+}

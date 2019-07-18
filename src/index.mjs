@@ -22,9 +22,20 @@ export {
 };
 
 
+import EthBlockModule, {
+  EthBlockProcessor,
+} from "./modules/block";
+
+export {
+  EthBlockModule,
+  EthBlockProcessor,
+};
+
+
 export const Modules = [
   EthAccountModule,
   EthPersonalAccountModule,
+  EthBlockModule,
 ];
 
 export default Module

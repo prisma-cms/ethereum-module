@@ -1,0 +1,33 @@
+
+type EthBlock {
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  hash: String! @unique
+  number: Int! @unique
+
+  difficulty: Float
+  totalDifficulty: Float
+  extraData: String
+  gasLimit: Float
+  gasUsed: Float
+  mixHash: String
+  nonce: String
+
+  parentHash: String
+  receiptsRoot: String
+  sha3Uncles: String
+  size: Int
+  stateRoot: String
+  date: DateTime
+
+
+  Miner: EthAccount @relation(name: "EthAccountMinedBlocks")
+
+  Transactions: [EthTransaction!]! @relation(name: "EthBlockTransactions")
+  transactionsRoot: String
+  transactions_count: Int @default(value: 0)
+
+  Uncles: [EthBlock!]!
+}
