@@ -7,11 +7,11 @@ type Query {
 
   ethAccounts(
     where: Boolean
-  ): [EthAccount!]!
+  ): [EthAccount]!
 
   ethPersonalAccounts(
     where: Boolean
-  ): [EthPersonalAccount!]!
+  ): [EthPersonalAccount]!
 
   ethBalance(
     address: String!
