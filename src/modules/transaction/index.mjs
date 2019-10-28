@@ -78,8 +78,11 @@ export class EthTransactionProcessor extends PrismaProcessor {
     if (!privateKey) {
       return this.addFieldError("privateKey", "Не был указан приватный ключ");
     }
+    // else if (!/^0x/.test(privateKey)) {
+    //   return this.addFieldError("privateKey", "Приватный ключ должен начинаться с 0x");
+    // }
     else if (!/^0x/.test(privateKey)) {
-      return this.addFieldError("privateKey", "Приватный ключ должен начинаться с 0x");
+      privateKey = `0x${privateKey}`;
     }
 
     try {
