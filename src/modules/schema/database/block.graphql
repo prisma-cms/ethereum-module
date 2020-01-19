@@ -1,8 +1,8 @@
 
 type EthBlock {
-  id: ID! @unique
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  id: ID! @unique @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
 
   hash: String! @unique
   number: Int! @unique
@@ -29,5 +29,6 @@ type EthBlock {
   transactionsRoot: String
   transactions_count: Int @default(value: 0)
 
+  # Maybe will removed or restructured
   Uncles: [EthBlock!]!
 }

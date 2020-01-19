@@ -1,7 +1,7 @@
 {
   "name": "@prisma-cms/ethereum-module",
   "description": "Ethereum module for @prisma-cms/server",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "main": "src/",
   "files": [
     "src"
@@ -18,7 +18,6 @@
     "@prisma-cms/mail-module": "latest",
     "@prisma-cms/prisma-module": "latest",
     "@prisma-cms/prisma-processor": "latest",
-    "@prisma-cms/sms-module": "latest",
     "@prisma-cms/user-module": "latest",
     "chalk": "^2.4.1",
     "eth-sig-util": "^2.2.0",
@@ -30,6 +29,7 @@
   },
   "devDependencies": {
     "@prisma-cms/server": "latest",
+    "@prisma-cms/sms-module": "latest",
     "expect": "^23.6.0",
     "graphql": "*",
     "mocha": "^5.2.0",

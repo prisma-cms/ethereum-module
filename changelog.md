@@ -1,3 +1,7 @@
+1.8.0
+===============================
+- Update schema
+
 1.7.2
 ===============================
 - Primary key not requires 0x in start of

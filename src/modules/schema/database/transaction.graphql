@@ -8,9 +8,9 @@ enum EthTransactionType {
 }
 
 type EthTransaction{
-  id: ID! @unique
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  id: ID! @unique @id
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
   chainId: Int!
 
   """Eth or tokens in ether. Equal value"""
@@ -27,7 +27,7 @@ type EthTransaction{
   Receiver: EthAccount @relation(name: "EthTransactionReceiver")
 
   """EthAccount created by this transaction"""
-  Account: EthAccount @relation(name: "EthAccountCreatedTransaction")
+  Account: EthAccount @relation(name: "EthAccountCreatedTransaction" link: INLINE)
 
   address: String! @unique
   type: EthTransactionType
